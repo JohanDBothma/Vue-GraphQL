@@ -1,172 +1,264 @@
 <template>
+  clear form on submit
+  <NotificationOverlay v-if="notification_show" :title="notification_title" :message="notification_message"
+    :type="notification_type" />
   <div class="max-w-7xl mx-auto mt-12">
-    <div v-if="loading" class="w-full text-2xl items-center justify-center flex space-x-2 text-blue-400 uppercase"><svg
-        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="w-6 h-6 animate-spin">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-      </svg>
-      <p>Loading Issues</p>
+    <h1 class="text-center text-blue-500 text-3xl">Johan Bothma's 1-grid Issue Tracker</h1>
+    <div class="xl:flex justify-evenly space-x-4 mt-12 mb-12">
+
+      <div class="ml-2">
+        <h1 class="text-blue-600 text-xl mb-6">Have an issue that isn't here?</h1>
+        <div class="ml-2 mb-12 xl:m-0 w-72 bg-gray-50 rounded-lg py-6 px-8  xl:top-12 xl:sticky">
+          <p class="text-gray-800 text-xl">Submit the form and let us know!</p>
+
+          <form method="POST" @submit.prevent="createIssue">
+            <FormInput label="Give your issue a title" id="title" v-model="title" />
+            <FormTextarea label="Describe your issue" v-model="description" />
+
+            <FormSelect label="Choose a Client" v-model="client" id="client">
+              <option :value="null">Choose a client</option>
+              <option v-for="client in clients" :key="client.value" :value="client.value">
+                {{client.label}}
+              </option>
+            </FormSelect>
+            <FormSelect label="Choose a Priority" v-model="priority" id="priority">
+              <option :value="null">Choose a priority</option>
+              <option v-for="priority in priorities" :key="priority.value" :value="priority.value">
+                {{priority.label}}
+              </option>
+            </FormSelect>
+            <FormSelect label="Choose an Issue Type" v-model="type" id="type">
+              <option :value="null">Choose a type</option>
+              <option v-for="repo_type in types" :key="repo_type.value" :value="repo_type.value">
+                {{repo_type.label}}
+              </option>
+            </FormSelect>
+
+            <CustomButton @click="createIssue" :class="{'opacity-25':createIssueLoading}"
+              :disabled="createIssueLoading">
+              <SpinningLoader class="text-white" v-if="createIssueLoading">
+                Loading
+              </SpinningLoader>
+              <span v-else>Submit Issue</span>
+            </CustomButton>
+          </form>
+        </div>
+      </div>
+      <div class="max-w-1/2">
+        <SpinningLoader class="text-2xl text-gray-900" v-if="loading && !result">
+          loading issues
+        </SpinningLoader>
+        <IssuesTable v-else :issues="result.repository.issues" />
+      </div>
     </div>
-    <div v-if="!loading && result" class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-
-      <table class="min-w-full divide-y divide-gray-300">
-        <thead class="bg-gray-50">
-          <tr>
-            <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-              Number</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description<br />Body</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Client</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Priority</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Type</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Assigned To</th>
-            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white">
-          <tr v-for="(edge, index) in result.repository.issues.edges" :key="edge.id"
-            :class="index % 2 === 0 ? undefined : 'bg-gray-50'">
-            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{ index+1 }}
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ edge.node.title }}</td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ edge.node.body }}</td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'C')">
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'P')">
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'T')">
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-
-              {{edge.node.assignees.edges[0]?.node.login}}
-            </td>
-            <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 capitalize">{{read_state(edge.node.state)}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <button v-if="!loading && result.repository.issues.pageInfo.hasNextPage"
-      class="bg-blue-400 my-4 rounded-full px-4 py-2 text-white uppercase" @click="loadMore">Load
-      more</button>
-    <a href="https://github.com/1-grid/GitIntegration/issues" target="_blank">1-grid github</a> <br />
-    <a href="https://docs.github.com/en/graphql/guides/forming-calls-with-graphql" target="_blank">github calls</a>
-    <div></div>
   </div>
 </template>
 
 <script>
-import gql from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
+import { ref } from 'vue'
+import { GET_ISSUES, POST_ISSUE } from './graphql'
+import { useQuery, useMutation } from '@vue/apollo-composable'
+import IssuesTable from './components/IssuesTable.vue'
+import FormSelect from './components/Form/FormSelect.vue'
+import FormInput from './components/Form/FormInput.vue'
+import FormTextarea from './components/Form/FormTextarea.vue'
+import CustomButton from './components/CustomButton.vue'
+import SpinningLoader from './components/SpinningLoader.vue'
+import NotificationOverlay from './components/NotificationOverlay.vue'
 
-const QUERY = gql`
-query($cursor: String) {
-    repository(owner:"1-grid", name:"GitIntegration") {
-    issues(first:5, after: $cursor) {
-      pageInfo{
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          title
-          body
-          state
-          assignees(first:1) {
-            edges {
-              node {
-                login
-              }
-            }
-          }
-          labels(first:3, orderBy:{field: NAME, direction: ASC}) {
-            edges {
-              node {
-                name
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-`
 export default {
   name: "App",
+  data ()
+  {
+    return {
+      clients: [],
+      types: [],
+      priorities: []
+    }
+  },
   setup ()
   {
-    const { result, loading, error, fetchMore } = useQuery( QUERY );
+    const { result, loading, error, fetchMore } = useQuery( GET_ISSUES );
 
-    function loadMore ()
-    {
-      fetchMore( {
+    const repository_id = ref( '' )
+    const title = ref( '' )
+    const description = ref( '' )
+    const client = ref( null )
+    const type = ref( null )
+    const priority = ref( null )
+    const notification_title = ref( '' )
+    const notification_message = ref( '' )
+    const notification_show = ref( false )
+    const notification_type = ref( "Success" )
+
+    const { mutate: createIssue, onDone, onError, loading: createIssueLoading } = useMutation( POST_ISSUE, () => (
+      {
         variables: {
-          cursor: result.value.repository.issues.pageInfo.endCursor
+          repositoryId: repository_id.value,
+          title: title.value,
+          body: description.value,
+          labelIds: [
+            client.value,
+            priority.value,
+            type.value
+          ]
         },
-        updateQuery: ( previousResult, { fetchMoreResult } ) =>
-        {
-          const newEdges = fetchMoreResult.repository.issues.edges
-          const pageInfo = fetchMoreResult.repository.issues.pageInfo
 
-          return newEdges.length ? {
-            ...previousResult,
+        update: ( cache, { data: { createIssue } } ) =>
+        {
+          let data = cache.readQuery( { query: GET_ISSUES } )
+
+          data = {
+            ...data,
             repository: {
-              ...previousResult.repository,
+              ...data.repository,
               // Issues
               issues: {
-                ...previousResult.repository.issues,
-                // Override with new pageInfo
-                pageInfo,
+                ...data.repository.issues,
                 // Concat edges
                 edges: [
-                  ...previousResult.repository.issues.edges,
-                  ...newEdges,
+                  ...data.repository.issues.edges,
+                  { node: createIssue.issue }
                 ],
-
               }
             }
-          } : previousResult
+          }
+          cache.writeQuery( { query: GET_ISSUES, data } )
         },
+      } ) )
+    onDone( () =>
+    {
+      console.log( 'done' )
+      // reset form values to blank
+      title.value = ''
+      description.value = ''
+      client.value = null
+      priority.value = null
+      type.value = null
+
+      // show popup
+      notification_title.value = "Succesfully Added!"
+      notification_message.value = "Your issue is important to us, thus it is on the bottom of the list"
+      notification_show.value = true
+
+      // scroll to bottom of page
+      window.scrollTo( 0, document.body.scrollHeight || document.documentElement.scrollHeight );
+
+      // remove notification after 3 seconds
+      setTimeout( () => notification_show.value = false, 3000 );
+
+    } ),
+
+      onError( error =>
+      {
+        // read the error message
+        // console.log( JSON.stringify( error, null, 4 ) )
+
+        notification_title.value = "Something went wrong"
+
+        if ( error.graphQLErrors[ 0 ].message )
+        {
+          var message = error.graphQLErrors[ 0 ].message
+
+          switch ( message )
+          {
+            case "Could not resolve to a node with the global id of ''": message = "Please ensure that you select a client, priority and type of issue"; break;
+            case "Could not resolve to a node with the global id of 'null'": message = "Please ensure that you select a valid client, priority and type of issue"; break;
+            case "Title can't be blank": message = "Please ensure that you provide a title to your issue"; break;
+            default: break;
+          }
+
+          notification_title.value = "We require more information"
+          notification_message.value = message
+        } else
+        {
+          notification_message.value = error
+        }
+
+        // show popup
+        notification_type.value = "Error"
+        notification_show.value = true
+
+        // remove notification after 3 seconds
+        setTimeout( () => notification_show.value = false, 3000 );
+
       } )
-    }
 
     return {
+      repository_id,
+      notification_title,
+      notification_message,
+      notification_show,
+      notification_type,
+      createIssue,
+      createIssueLoading,
       result,
       loading,
       fetchMore,
-      loadMore,
-      error
+      error,
+      title,
+      description,
+      client,
+      priority,
+      type,
     };
   },
-
+  beforeUpdate ()
+  {
+    this.getLabels()
+    this.getRepositoryId()
+  },
   methods: {
-    /* 
-      run this method 3 times for each label, C: client, P: priority, T: type
-      since they can be in any order, looping through them and returning once found is the quickest
-      check if the label does have any edges, if any, loop through them all and if it matches the char that is passed, slice the first 3 chars of and print
-    */
-    read_edge ( label, char = "C" )
+    getRepositoryId ()
     {
-      if ( typeof label.edges !== "undefined" && label.edges.length > 0 )
+      this.repository_id = this.result.repository.id
+    },
+    getLabels ()
+    {
+      var labels = this.result.repository.labels?.edges
+      var clients_array = []
+      var priority_array = []
+      var types_array = []
+      for ( var x = 0; x <= labels.length; x++ )
       {
-        for ( var x = 0; x <= label.edges.length; x++ )
+        var element = {}
+        if ( typeof labels[ x ] !== "undefined" )
         {
-          if ( typeof label.edges[ x ] !== "undefined" && label.edges[ x ].node.name[ 0 ] === char )
+          element.label = labels[ x ].node.name.slice( 3 )
+          element.value = labels[ x ].node.id
+
+          if ( labels[ x ].node.name[ 0 ] === "C" )
           {
-            return label.edges[ x ].node.name.slice( 3 )
+            clients_array.push( element )
+          } else if ( labels[ x ].node.name[ 0 ] === "P" )
+          {
+            priority_array.push( element )
+          }
+          else if ( labels[ x ].node.name[ 0 ] === "T" )
+          {
+            types_array.push( element )
+
           }
         }
-      }
-    },
-    // make the status not shout in all caps
-    read_state ( state )
-    {
-      return state[ 0 ].toUpperCase() + state.slice( 1 ).toLowerCase();
 
+        this.clients = clients_array
+        this.types = types_array
+
+        // sort priority aray, thank you to this kind person: https://stackoverflow.com/questions/55123569/react-sorting-by-specific-word
+        this.priorities = priority_array.sort( ( a, b ) =>
+        {
+          const orders = { 'Low': 0, 'Medium': 1, 'High': 2 };
+          return orders[ a.label ] - orders[ b.label ];
+        } );
+      }
     }
-  }
+  },
+  components: { IssuesTable, FormSelect, FormInput, FormTextarea, CustomButton, NotificationOverlay, SpinningLoader }
 }
+
 </script>
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
