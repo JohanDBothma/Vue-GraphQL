@@ -2,11 +2,11 @@ import gql from "graphql-tag";
 
 // repository( owner: "1-grid", name: "GitIntegration" ) {
 // repository( owner: "JohanDBothma", name: "1-grid-assesment" ) {
-// I would prefer to get all labels and not a set amound, but not sure how to get * labels
+// I would prefer to get all labels and not a set amount, but not sure how to get * labels
 
 export const GET_ISSUES = gql`
 	query {
-		repository(owner: "JohanDBothma", name: "1-grid-assesment") {
+		repository(owner: "1-grid", name: "GitIntegration") {
 			id
 			labels(first: 20) {
 				edges {
@@ -16,7 +16,7 @@ export const GET_ISSUES = gql`
 					}
 				}
 			}
-			issues(first: 100, states: OPEN) {
+			issues(first: 100) {
 				edges {
 					node {
 						title
@@ -30,7 +30,7 @@ export const GET_ISSUES = gql`
 							}
 						}
 						labels(
-							first: 9
+							first: 20
 							orderBy: { field: NAME, direction: ASC }
 						) {
 							edges {
@@ -72,7 +72,7 @@ export const POST_ISSUE = gql`
 						}
 					}
 				}
-				labels(first: 9, orderBy: { field: NAME, direction: ASC }) {
+				labels(first: 20, orderBy: { field: NAME, direction: ASC }) {
 					edges {
 						node {
 							name

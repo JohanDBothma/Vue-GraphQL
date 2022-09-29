@@ -16,19 +16,19 @@
             <FormTextarea label="Describe your issue" v-model="description" />
 
             <FormSelect label="Choose a Client" v-model="client" id="client">
-              <option :value="null">Choose a client</option>
-              <option v-for="client in clients" :key="client.value" :value="client.value">
-                {{client.label}}
+              <option :value="null" disabled>Choose a client</option>
+              <option v-for="loop_client in clients" :key="loop_client.value" :value="loop_client.value">
+                {{loop_client.label}}
               </option>
             </FormSelect>
             <FormSelect label="Choose a Priority" v-model="priority" id="priority">
-              <option :value="null">Choose a priority</option>
-              <option v-for="priority in priorities" :key="priority.value" :value="priority.value">
-                {{priority.label}}
+              <option :value="null" disabled>Choose a priority</option>
+              <option v-for="loop_priority in priorities" :key="loop_priority.value" :value="loop_priority.value">
+                {{loop_priority.label}}
               </option>
             </FormSelect>
             <FormSelect label="Choose an Issue Type" v-model="type" id="type">
-              <option :value="null">Choose a type</option>
+              <option :value="null" disabled>Choose a type</option>
               <option v-for="repo_type in types" :key="repo_type.value" :value="repo_type.value">
                 {{repo_type.label}}
               </option>
@@ -128,13 +128,12 @@ export default {
       } ) )
     onDone( () =>
     {
-      console.log( 'done' )
       // reset form values to blank
       title.value = ''
       description.value = ''
-      client.value = null
-      priority.value = null
-      type.value = null
+      client.value = ''
+      priority.value = ''
+      type.value = '';
 
       // show popup
       notification_title.value = "Succesfully Added!"
@@ -154,6 +153,7 @@ export default {
         // read the error message
         // console.log( JSON.stringify( error, null, 4 ) )
 
+        console.log( error )
         notification_title.value = "Something went wrong"
 
         if ( error.graphQLErrors[ 0 ].message )

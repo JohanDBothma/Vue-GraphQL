@@ -1,6 +1,3 @@
-// https://www.apollographql.com/blog/frontend/getting-started-with-vue-apollo/
-// https://github.com/skevy/graphiql-app
-// cannot make site iwthout tailwind
 import { createApp, provide, h } from "vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";

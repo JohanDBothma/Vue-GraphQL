@@ -20,20 +20,22 @@
         :class="index % 2 === 0 ? undefined : 'bg-gray-50'">
         <td class="whitespace-pre-wrap w-12 py-4 pl-4 pr-3 text-sm  text-gray-500  sm:pl-6">{{ index+1 }}
         </td>
-        <td class="whitespace-pre-wrap w-52 break-all px-3 py-4 text-sm text-gray-500">{{ edge.node.title }}</td>
-        <td class="whitespace-pre-wrap w-96 break-all px-3 py-4 text-sm text-gray-500">{{ edge.node.body }}</td>
-        <td class="whitespace-pre-wrap w-32 px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'C')">
+        <td class="whitespace-pre-wrap w-52 break-word px-3 py-4 text-sm text-gray-500">{{ edge.node.title }}</td>
+        <td class="whitespace-pre-wrap w-96 break-word px-3 py-4 text-sm text-gray-500">{{ edge.node.body }}</td>
+        <td class="whitespace-pre-wrap w-32 break-word px-3 py-4 text-sm text-gray-500"
+          v-html="read_edge(edge.node.labels, 'C')">
         </td>
-        <td class="whitespace-pre-wrap px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'P')">
+        <td class="whitespace-pre-wrap px-3 break-word py-4 text-sm text-gray-500"
+          v-html="read_edge(edge.node.labels, 'P')">
         </td>
         <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500"
           v-html="read_edge(edge.node.labels, 'T')">
         </td>
-        <td class="whitespace-pre-wrap break-all px-3 py-4 text-sm text-gray-500">
+        <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500">
 
           {{edge.node.assignees.edges[0]?.node.login}}
         </td>
-        <td class="whitespace-pre-wrap break-all px-3 py-4 text-sm text-gray-500 capitalize">
+        <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500 capitalize">
           {{read_state(edge.node.state)}}
         </td>
       </tr>
