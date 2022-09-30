@@ -11,6 +11,7 @@ I am only aware of one real bug. When submitting an issue, the select dropdowns 
 I installed the application using the VueJS CLI, Vue Apollo and TailwindCSS: 
 
 -**[Vue Apollo]**(https://apollo.vuejs.org/) as it seemed that I needed it to run queries easier (again, my first time using GraphQL)
+
 -**[Tailwind CSS]**(https://tailwindcss.com/) I adore using TailwindCSS as it allows me to make mobile friendly and good looking systems at a fraction of the time normal styling would take me
 
 ### Installation
