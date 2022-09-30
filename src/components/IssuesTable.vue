@@ -1,41 +1,57 @@
 <template>
   <h1 class="text-blue-600 text-xl mb-6">Current Reported Issues</h1>
-  <table class="w-full divide-y divide-gray-300 shadow ring-1 ring-black ring-opacity-5 md:rounded-lg ">
+  <table class="table-fixed divide-y divide-gray-300 shadow ring-1 ring-black ring-opacity-5 md:rounded-lg ">
     <thead class="bg-gray-50">
       <tr class="divide-x divide-gray-200">
-        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-medium  sm:pl-6">
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
           Number</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Title</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Description<br />Body
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Title</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Description<br />Body
         </th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Client</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Priority</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Type</th>
-        <th scope="col" class="w-32 px-3 py-3.5 text-left text-sm font-medium ">Assigned To</th>
-        <th scope="col" class="px-3 py-3.5 text-left text-sm font-medium ">Status</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Client</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Priority</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Type</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Assigned To</th>
+        <th scope="col"
+          class="sticky top-0 z-10 border-b border-gray-300 bg-gray-50 bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-medium text-gray-900 backdrop-blur backdrop-filter  ">
+          Status</th>
       </tr>
     </thead>
     <tbody class="bg-white ">
       <tr v-for="(edge, index) in issues.edges" :key="edge.id" class="divide-x divide-gray-200"
         :class="index % 2 === 0 ? undefined : 'bg-gray-50'">
-        <td class="whitespace-pre-wrap w-12 py-4 pl-4 pr-3 text-sm  text-gray-500  sm:pl-6">{{ index+1 }}
+        <td class="py-4 pl-4 pr-3 text-sm  text-gray-500  ">{{ index+1 }}
         </td>
-        <td class="whitespace-pre-wrap w-52 break-word px-3 py-4 text-sm text-gray-500">{{ edge.node.title }}</td>
-        <td class="whitespace-pre-wrap w-96 break-word px-3 py-4 text-sm text-gray-500">{{ edge.node.body }}</td>
-        <td class="whitespace-pre-wrap w-32 break-word px-3 py-4 text-sm text-gray-500"
-          v-html="read_edge(edge.node.labels, 'C')">
+        <td class="  px-3 py-4 text-sm text-gray-500">
+          {{ edge.node.title }}
         </td>
-        <td class="whitespace-pre-wrap px-3 break-word py-4 text-sm text-gray-500"
-          v-html="read_edge(edge.node.labels, 'P')">
+        <td class="  px-3 py-4 text-sm text-gray-500">
+          {{ edge.node.body }}
         </td>
-        <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500"
-          v-html="read_edge(edge.node.labels, 'T')">
+        <td class="  px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'C')">
         </td>
-        <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500">
+        <td class="  px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'P')">
+        </td>
+        <td class="  px-3 py-4 text-sm text-gray-500" v-html="read_edge(edge.node.labels, 'T')">
+        </td>
+        <td class="  px-3 py-4 text-sm text-gray-500">
 
           {{edge.node.assignees.edges[0]?.node.login}}
         </td>
-        <td class="whitespace-pre-wrap break-word px-3 py-4 text-sm text-gray-500 capitalize">
+        <td class="  px-3 py-4 text-sm text-gray-500 capitalize">
           {{read_state(edge.node.state)}}
         </td>
       </tr>
@@ -74,36 +90,4 @@ export default {
     }
   }
 }
-
-/*function loadMore ()
-    {
-      fetchMore( {
-        variables: {
-          cursor: result.value.repository.issues.pageInfo.endCursor
-        },
-        updateQuery: ( previousResult, { fetchMoreResult } ) =>
-        {
-          const newEdges = fetchMoreResult.repository.issues.edges;
-          const pageInfo = fetchMoreResult.repository.issues.pageInfo;
-          return newEdges.length ? {
-            ...previousResult,
-            repository: {
-              ...previousResult.repository,
-              // Issues
-              issues: {
-                ...previousResult.repository.issues,
-                // Override with new pageInfo
-                pageInfo,
-                // Concat edges
-                edges: [
-                  ...previousResult.repository.issues.edges,
-                  ...newEdges,
-                ],
-              }
-            }
-          } : previousResult;
-        },
-      } );
-    }
-    */
-</script>
+</script> 

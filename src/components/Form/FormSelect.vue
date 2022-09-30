@@ -32,17 +32,7 @@ export default {
     {
       this.$emit( 'update:modelValue', selected )
     },
-  },
-  methods: {
-    focus ()
-    {
-      this.$refs.input.focus()
-    },
-    select ()
-    {
-      this.$refs.input.select()
-    },
-  },
+  }
 }
 
 </script>

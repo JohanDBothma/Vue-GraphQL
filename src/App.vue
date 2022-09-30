@@ -1,5 +1,4 @@
 <template>
-  clear form on submit
   <NotificationOverlay v-if="notification_show" :title="notification_title" :message="notification_message"
     :type="notification_type" />
   <div class="max-w-7xl mx-auto mt-12">
@@ -7,9 +6,9 @@
     <div class="xl:flex justify-evenly space-x-4 mt-12 mb-12">
 
       <div class="ml-2">
-        <h1 class="text-blue-600 text-xl mb-6">Have an issue that isn't here?</h1>
         <div class="ml-2 mb-12 xl:m-0 w-72 bg-gray-50 rounded-lg py-6 px-8  xl:top-12 xl:sticky">
-          <p class="text-gray-800 text-xl">Submit the form and let us know!</p>
+          <h1 class="text-blue-600 text-xl mb-6">Have an issue that isn't here?</h1>
+          <p class="text-gray-800 text-sm">Submit the form and let us know!</p>
 
           <form method="POST" @submit.prevent="createIssue">
             <FormInput label="Give your issue a title" id="title" v-model="title" />
@@ -67,7 +66,7 @@ import SpinningLoader from './components/SpinningLoader.vue'
 import NotificationOverlay from './components/NotificationOverlay.vue'
 
 export default {
-  name: "App",
+  name: "JBothma 1-grid assessment",
   data ()
   {
     return {
@@ -91,6 +90,7 @@ export default {
     const notification_show = ref( false )
     const notification_type = ref( "Success" )
 
+    // get all the ref information that has been entered, and run the mutation
     const { mutate: createIssue, onDone, onError, loading: createIssueLoading } = useMutation( POST_ISSUE, () => (
       {
         variables: {
@@ -104,6 +104,7 @@ export default {
           ]
         },
 
+        // update the current results with the added issue
         update: ( cache, { data: { createIssue } } ) =>
         {
           let data = cache.readQuery( { query: GET_ISSUES } )
@@ -153,13 +154,14 @@ export default {
         // read the error message
         // console.log( JSON.stringify( error, null, 4 ) )
 
-        console.log( error )
+        // preset the popup title and message
         notification_title.value = "Something went wrong"
 
         if ( error.graphQLErrors[ 0 ].message )
         {
           var message = error.graphQLErrors[ 0 ].message
 
+          // translate some generic errors that gets passed from Github to be more customized
           switch ( message )
           {
             case "Could not resolve to a node with the global id of ''": message = "Please ensure that you select a client, priority and type of issue"; break;
@@ -205,7 +207,9 @@ export default {
   },
   beforeUpdate ()
   {
+    // translate the labels of the repository in readable format
     this.getLabels()
+    // set the repository id to a reference
     this.getRepositoryId()
   },
   methods: {
@@ -215,7 +219,10 @@ export default {
     },
     getLabels ()
     {
+      // if we have labels as a result, loop through them all and group them by their respective type
       var labels = this.result.repository.labels?.edges
+
+      // set empty arrays that will hold all the options for each respective array of objects
       var clients_array = []
       var priority_array = []
       var types_array = []
@@ -258,6 +265,7 @@ export default {
 
 </script>
 <style>
+/* give a nice scroll when a new issue has been added */
 html {
   scroll-behavior: smooth;
 }
