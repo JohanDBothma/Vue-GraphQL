@@ -14,7 +14,6 @@ I installed the application using the VueJS CLI, Vue Apollo and TailwindCSS:
 -**[Tailwind CSS]**(https://tailwindcss.com/) I adore using TailwindCSS as it allows me to make mobile friendly and good looking systems at a fraction of the time normal styling would take me
 
 ### Installation
-
 Below are the commands that can be used to install. It is just the out of the box standard Vue CLI commands.
 
 ```
